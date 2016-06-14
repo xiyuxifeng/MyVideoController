@@ -1,6 +1,7 @@
 # MyVideoController
 ==============
-![demoGIF.gif](https://github.com/xiyuxifeng/MyVideoController/demo.gif)
+![demo.gif](https://github.com/xiyuxifeng/MyVideoController/blob/master/MyVideoController/demo.gif)
+
 Make your view controllers a custom backgroundvideo
 
 ## Installation
