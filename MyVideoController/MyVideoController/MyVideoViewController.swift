@@ -31,8 +31,14 @@ class MyVideoViewController: UIViewController {
         // 监听失败事件
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MyVideoViewController.playbackError(_:)), name: AVPlayerItemFailedToPlayToEndTimeNotification, object: nil)
         
+        // 监听屏幕旋转
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MyVideoViewController.orientationChanged(_:)) , name: UIDeviceOrientationDidChangeNotification, object: nil)
         
+        // 监听进入后台
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MyVideoViewController.willEnterBackground(_:)), name: UIApplicationWillResignActiveNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MyVideoViewController.willBecomeActive(_:)), name: UIApplicationWillEnterForegroundNotification, object: nil)
+        
+        // 添加Player
         addPlayer()
         
         if isContinue == true {
@@ -47,6 +53,8 @@ class MyVideoViewController: UIViewController {
         NSNotificationCenter.defaultCenter().removeObserver(self, name: AVPlayerItemDidPlayToEndTimeNotification, object: nil)
         NSNotificationCenter.defaultCenter().removeObserver(self, name: AVPlayerItemFailedToPlayToEndTimeNotification, object: nil)
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIApplicationWillResignActiveNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIApplicationWillEnterForegroundNotification, object: nil)
         
         pause()
     }
@@ -56,8 +64,27 @@ class MyVideoViewController: UIViewController {
     }
     
     func orientationChanged(notification: NSNotification) {
-        // 全屏旋转时改变frame
-        MyPlayer.shareInstance.playerLayer?.frame = view.layer.bounds
+        MyPlayer.shareInstance.playerLayer?.frame = view.layer.bounds // 全屏旋转时改变frame
+    }
+    
+    func willEnterBackground(notification: NSNotification) {
+        pause()
+    }
+    
+    func willBecomeActive(notification: NSNotification) {
+        play()
+    }
+    
+    // 播放完成
+    func playbackFinished(notification: NSNotification) {
+        if isLoop == true {
+            replay()
+        }
+    }
+    
+    // 播放失败
+    func playbackError(notification: NSNotification) {
+        replay()
     }
 }
 
@@ -148,18 +175,6 @@ extension MyVideoViewController {
         myPlayer.playerLayer?.player = nil
         myPlayer.playerLayer?.removeFromSuperlayer()
         myPlayer.playerLayer = nil
-    }
-    
-    // 播放完成
-    func playbackFinished(notification: NSNotification) {
-        if isLoop == true {
-            replay()
-        }
-    }
-    
-    // 播放失败
-    func playbackError(notification: NSNotification) {
-        replay()
     }
 }
 
